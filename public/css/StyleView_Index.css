@@ -1,0 +1,47 @@
+@charset "utf-8";
+/* CSS StyleView_Index */
+
+
+.style_container{
+	top:110px;
+	position: relative;
+}
+
+.style_box{
+	width:840px;
+	float:left;
+	height:450px;
+	border-bottom:1px solid #CCC;
+}
+
+.img1{
+	width:520px;
+}
+
+.recommend_box{
+	width:360px;
+	height:450px;
+	overflow:hidden;
+	overflow-y:auto;
+	border:1px solid #CCC;
+	float:right;
+}
+
+.recommend_box li{
+	width:170px;
+	float:left;
+	padding:5px 0;
+	cursor:pointer;
+}
+.recommend_box li img{
+	 width:160px;
+	 height:118px;
+}
+
+.recommend_box li:hover span{ color:#0080C0;}
+
+
+.bottom{
+	width:400px;
+	margin-top:10px;
+}
