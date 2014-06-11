@@ -38,8 +38,7 @@ class Message {
                 (`username`,`message`,`type`,`order_id`)
                 VALUES
                 ('{$username}','{$message}',{$type}, '{$order_id}');";
-		$filename = _get_log_filename(C("LOG_PUSH_SQL"));
-		_log($filename, "$sql\n");
+		_L("sql", "$sql\n");
 		$this -> db -> execute($sql);
 		//echo $sql ;
 		$message_id = $this -> db -> getLastInsID();

@@ -98,13 +98,6 @@ function debug_error($str) {
 	return false;
 }
 
-function error_output($str) {
-	echo "\033[1;40;31m" . $str . "\033[0m" . "\n";
-}
-
-function right_output($str) {
-	echo "\033[1;40;32m" . $str . "\033[0m" . "\n";
-}
 
 //调试数组
 function _dump($var) {
@@ -143,8 +136,12 @@ function dump($var, $echo = true, $label = null, $strict = true) {
  * @param type $msg
  */
 function _debug($msg) {
-	if (C("debug"))
-		echo "$msg<br />";
+	if (C("debug")) {
+		$time = date("Y-m-d H:i:s");
+		$msg = "[$time]\n{$msg}\n";
+		$msg = str_replace("\n", "<br />", $msg);
+		echo $msg ; 
+	}
 }
 
 /**
@@ -171,27 +168,12 @@ function _L($log_home, $msg) {
 	_log($filename, $msg);
 }
 
-function L($msg) {
-	if (C("log")) {
-		_debug("$msg");
-		$log_home = C("LOG_HOME");
-		$filename = _get_log_filename($log_home);
-
-		$time = date("Y-m-d H:i:s");
-		$clientIP = $_SERVER['REMOTE_ADDR'];
-		$msg = "[$time $ip]\n$msg\n";
-
-		$fd = fopen($filename, "a+");
-		fwrite($fd, $msg);
-		fclose($fd);
-	}
-}
-
-function _get_log_filename($log_home) {
+function _get_log_filename($name) {
 	$year = date("Y");
 	$month = date("m");
 	$day = date("d");
-	$filename = "$log_home/$year/$month/$day.txt";
+	$log_home = C("LOG_HOME");
+	$filename = "$log_home/$name/$year/$month/$day.txt";
 	$dir = dirname($filename);
 	if (!file_exists($dir)) {
 		if (!mkdir($dir, 0777, true)) {
@@ -200,7 +182,7 @@ function _get_log_filename($log_home) {
 		chmod($dir, 0777);
 	}
 	if (!file_exists($filename)) {
-		file_put_contents($filename, "#created at " . date("Y-m-d H:i:s"));
+		file_put_contents($filename, "#created at " . date("Y-m-d H:i:s") . "\n");
 		chmod($filename, 0777);
 	}
 	return $filename;

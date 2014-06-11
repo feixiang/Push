@@ -3,7 +3,7 @@
 /**
  * 设备中心 -> 对应apns_devices表
  * 1 user -> n device
- * 1 device -> n message
+ * 1 device -> n user
  * @author Administrator
  */
 class Device {
@@ -51,7 +51,6 @@ class Device {
 	public function register($uid, $get) {
 		$deviceuid = $get["deviceuid"];
 		$username = $get["username"];
-		L("[register]user $username;device:$deviceuid");
 		$device_id = $this -> add($uid, $get);
 		return $device_id;
 	}
@@ -78,7 +77,7 @@ class Device {
 				}
 			}
 			$insert_values["uid"] = $uid;
-			//            dump($insert_values);
+			// 主键是设备唯一标识符与用户id组成，一个用户可以有多个设备，一个设备可以登录多个用户
 			$sql = "INSERT INTO `apns_devices`
                                     (`uid`,
                                      `device_type`,
@@ -115,7 +114,7 @@ class Device {
                                     NOW()
 				)
                 ON DUPLICATE KEY UPDATE
-                                    `deviceuid`= {$uid},
+                                    `uid`= {$uid},
                                     `device_type`= '{$insert_values["device_type"]}',
                                     `appname`= '{$insert_values["appname"]}',
                                     `appversion`='{$insert_values["appversion"]}',
@@ -130,7 +129,7 @@ class Device {
                                     `status`='active',
                                     `modified`=NOW();";
 			$this -> db -> execute($sql);
-			// echo $this -> db -> _sql();
+			//_debug($this -> db -> _sql());
 			return $this -> db -> getLastInsID();
 		}
 	}
@@ -182,15 +181,21 @@ class Device {
 	 * 卸载设备
 	 * @param type $token
 	 */
-	public function unregister($deviceuid) {
+	public function unregister($uid=0 , $deviceuid) {
 		//  先判断设备状态
 		$status = $this -> get_status($deviceuid);
 		if ($status == 1) {
-			$sql = "UPDATE `apns_devices`
-		SET `status`='uninstalled'
-		WHERE `deviceuid`='{$deviceuid}';";
+			if( $uid > 0 ){
+				$sql = "UPDATE `apns_devices`
+						SET `status`='uninstalled'
+						WHERE uid={$uid} and `deviceuid`='{$deviceuid}';";
+			}else{
+				$sql = "UPDATE `apns_devices`
+						SET `status`='uninstalled'
+						WHERE `deviceuid`='{$deviceuid}';";
+			}
+			
 			$this -> db -> execute($sql);
-			L("[uninstall device]deviceuid:$deviceuid");
 		}
 		return true;
 	}
@@ -200,7 +205,7 @@ class Device {
 	 * @param type $uid
 	 */
 	public function get_bind_device($user_id) {
-		$sql = "select * from `apns_devices` where `uid`=$user_id and `status`='active'";
+		$sql = "select * from `apns_devices` where `uid`=$user_id and `status`='active' order by `modified` limit 1";
 		$devices = $this -> db -> select($sql);
 		return $devices;
 	}
@@ -214,7 +219,6 @@ class Device {
 	public function get_device_by_uid($deviceuid) {
 		$sql = "select * from `apns_devices` where `deviceuid`='$deviceuid' and `status`='active' limit 1";
 		$result = $this -> db -> find($sql);
-		// echo $this -> db -> _sql();
 		return $result;
 	}
 

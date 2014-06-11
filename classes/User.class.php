@@ -37,6 +37,7 @@ class User {
             $sql = <<< EOF
             INSERT INTO `cloudapp`.`cloudapp_user` (`order_token`,`username`) VALUES ('$order_token','$username');
 EOF;
+
             $ret = $this->db->execute($sql);
             $uid = $this->db->getLastInsID();
         }

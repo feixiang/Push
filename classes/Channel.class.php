@@ -1064,7 +1064,6 @@ class Channel extends BaeBase
 		$request->set_body($content);
 		if (is_array($this->_curlOpts)) {
 			$request->set_curlopts($this->_curlOpts);
-			// _dump($request);
 		}
 		$request->send_request();
 		return new ResponseCore($request->get_response_header(),

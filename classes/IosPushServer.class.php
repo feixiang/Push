@@ -114,8 +114,8 @@ class IosPushServer extends PushServer {
         $arr_message['type'] = $msg_type;
         $arr_message['pid'] = (string) $order_id;
         $message = json_encode($arr_message);
-        _dump($message);
-
+		_dump($message);
+		
         if (strlen($pid) == 0)
             $this->_triggerError('Missing message pid.', E_USER_ERROR);
         if (strlen($message) == 0)
@@ -184,6 +184,7 @@ class IosPushServer extends PushServer {
                 } else {
                     _debug("push success");
                     $this->_pushSuccess($pid);
+                    $ret = TRUE;
                 }
             }
         }

@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 require_once ('common.php');
 
@@ -14,13 +14,13 @@ require_once ('common.php');
 function register() {
 	if (!isset($_GET["device_type"])) {
 		$device_list = implode(",", C("DEVICE_TYPE"));
-		debug_error("device type is needed!supported:$device_list");
+		die("device type is needed!supported:$device_list");
 	}
 	if (!isset($_GET["username"]) || !isset($_GET["order_token"]) || !isset($_GET["deviceuid"])) {
-		debug_error("username , order_token , deviceuid are needed!");
+		die("username , order_token , deviceuid are needed!");
 	}
-	$message = "[register]username=" . $_GET["username"] . "\ndeviceuid=" . $_GET["deviceuid"] . "\norder_token=" . $_GET["order_token"];
-	L("$message");
+	$message = "[register]\nusername=" . $_GET["username"] . "\ndeviceuid=" . $_GET["deviceuid"] . "\norder_token=" . $_GET["order_token"];
+	_L("register","$message");
 
 	// 注册用户
 	$UserCenter = new User();
@@ -29,7 +29,7 @@ function register() {
 	$DeviceCenter = new Device();
 	$device_id = $DeviceCenter -> register($uid, $_GET);
 
-	_debug("user_id=$uid<br />device_id=$device_id<br />");
+	_debug("user_id=$uid\ndevice_id=$device_id\n");
 	if ($device_id) {
 		$data["device_id"] = $device_id;
 		ajaxReturn($data, "success", 1);

@@ -1,7 +1,7 @@
-<?PHP
+<?php
 
 /* * *
- * 接收系统推送的消息，保存到消息原始表
+ * 接收订单系统推送的消息，保存到消息原始表
  */
 require_once('common.php');
 
@@ -15,32 +15,34 @@ function save_message() {
     }
     $message = $_POST["message"];
     $message = iconv('gbk', 'UTF-8//IGNORE', $message);
-
-    _log("log/origin/push_multi_" . date("Y-m-d") . ".txt", "$message");
+	
+    _L("receive", "$message");
 
     $MsgCenter = new Message();
     $messages_obj = simplexml_load_string($message);
-    $mid = 0;
-    if ($messages_obj) {
-        $PushServer = new PushServer();
-        foreach ($messages_obj->note as $key => $value) {
-            $attribute = $value->attributes();
-            $username = $attribute->username;
-            $message = $attribute->message;
-            $type = $attribute->type;
-            $order_id = $attribute->order_id;
-
-            $mid = $MsgCenter->save($username, $message, $type, $order_id);
-            // 这里接收消息马上发送 ， 为了不堵塞客户端，这里后台调用
-            $api_file = "cmd_push.php";
-            $log_file = _get_log_filename(C("LOG_PUSH"));
-            $cmd = "/usr/bin/php $api_file $username $message $type $order_id $mid >> $log_file 2>&1 &";
-            // echo $cmd;
-            `$cmd`;
-        }
-    }
+	$mid = 0 ;
+	if( $messages_obj ){
+		$PushServer = new PushServer();
+	    foreach ($messages_obj->note as $key => $value) {
+	        $attribute = $value->attributes();
+	        $username = $attribute->username;
+	        $message = $attribute->message;
+	        $type = $attribute->type;
+	        $order_id = $attribute->order_id;
+	
+	        $mid = $MsgCenter->save($username, $message, $type, $order_id);
+			// 这里接收消息马上发送 ， 为了不堵塞客户端，这里后台调用
+			$api_file = "cmd_push.php";
+			$log_file = _get_log_filename("push");
+			$cmd = "/usr/bin/php $api_file '$username' '$message' '$type' '$order_id' '$mid' >> $log_file 2>&1 &";
+			//_log($log_file , "$cmd");
+			`$cmd`;
+	    }
+	}
     echo (intval($mid) > 0) ? "1" : "0";
 }
 
 save_message();
+
+
 ?>

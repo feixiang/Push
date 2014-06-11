@@ -23,7 +23,7 @@ function push($username, $message, $type, $order_id, $mid) {
 	if ($mid > 0) {
 		$PushServer -> push($username, $message, $type, $order_id, $mid);
 	} else {
-		_L(C("LOG_ERROR"),"username={$username}\ntype={$type}\nmessage={$message}\norder_id={$order_id}\nresult:error\n");
+		_L("error","username={$username}\ntype={$type}\nmessage={$message}\norder_id={$order_id}\nresult:error\n");
 	};
 }
 ?>

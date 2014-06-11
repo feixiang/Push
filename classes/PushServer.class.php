@@ -70,7 +70,7 @@ class PushServer {
 				$this -> push_common($device_info, $message, $msg_type, $order_id, $mid);
 			}
 		} else {
-			_L(C("LOG_ERROR"), "username=$username\nmessage=$message\norder_id=$order_id\nresult:no devices found\n");
+			_L("error", "username=$username\nmessage=$message\norder_id=$order_id\nresult=no devices found\n");
 		}
 	}
 
@@ -89,12 +89,12 @@ class PushServer {
 		while (!$ret && $this -> retry > 0) {
 			$ret = $model -> push_message($device_info, $message, $msg_type, $order_id, $mid);
 			$this -> retry--;
-			_L(C("LOG_PUSH_RETRY"), "device=$deviceversion\nmessage=$message\norder_id=$order_id\nresult:retry\n");
+			_L("retry", "device=$deviceversion\nmessage=$message\norder_id=$order_id\nresult=retry\n");
 		}
 		if ($ret) {
-			_L(C("LOG_PUSH_SUCCESS"), "device=$deviceversion$username\nmessage=$message\norder_id=$order_id\nresult:success\n");
+			_L("success", "device=$deviceversion\nmessage=$message\norder_id=$order_id\nresult=success\n");
 		} else {
-			_L(C("LOG_PUSH_ERROR"), "device=$deviceversion\nmessage=$message\norder_id=$order_id\nresult:error\n");
+			_L("push_error", "device=$deviceversion\nmessage=$message\norder_id=$order_id\nresult=error\n");
 		}
 	}
 
@@ -124,7 +124,7 @@ class PushServer {
 			$mid = 0;
 			$this -> push_common($device_info, $message, $msg_type, $order_id, $mid);
 		} else {
-			_L(C("LOG_API_PUSH"), "no device:$id found");
+			_L("api_push", "no device:$id found");
 		}
 	}
 

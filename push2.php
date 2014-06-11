@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 /* * *
  * 接收订单系统推送的消息，保存到消息原始表
@@ -15,7 +15,7 @@ function save_message() {
     }
     $message = $_POST["message"];
     
-    _log("log/origin/push_multi_" . date("Y-m-d") . ".txt", "$message");
+    _L("receive2", "$message");
 
     $MsgCenter = new Message();
     $messages_obj = simplexml_load_string($message);
@@ -32,9 +32,10 @@ function save_message() {
 	        $mid = $MsgCenter->save($username, $message, $type, $order_id);
 			// 这里接收消息马上发送 ， 为了不堵塞客户端，这里后台调用
 			$api_file = "cmd_push.php";
-			$log_file = _get_log_filename(C("LOG_PUSH2"));
-			$cmd = "/usr/bin/php $api_file $username $message $type $order_id $mid >> $log_file 2>&1 &";
+			$log_file = _get_log_filename("push2");
+			$cmd = "/usr/bin/php $api_file '$username' '$message' '$type' '$order_id' '$mid' >> $log_file 2>&1 &";
 			// echo $cmd;
+			//_log($log_file , "$cmd");
 			`$cmd`;
 	    }
 	}
